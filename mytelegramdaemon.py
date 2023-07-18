@@ -1,31 +1,77 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QDialog, QLineEdit, QVBoxLayout, QPushButton, QLabel, QMessageBox, QErrorMessage
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QWidget, QDialog, QLineEdit, QVBoxLayout, QPushButton, QLabel, QMessageBox, QErrorMessage
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from telegram import Bot, Update, error
 from telegram.ext import Updater, CommandHandler, CallbackContext
 import os
+import sys
 import threading
 import time
 import json
 import subprocess
+import winreg
 
 settings = {
     'token': '',
+    'vpnname' : '',
+    'vpnuser' : '',
+    'vpnpass' : '',
+    'wifiname' : '',
+    'wifipass' : ''
 }    
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+        
+    return os.path.join(base_path, relative_path)
+
 class SettingsDialog(QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, on_accept, parent=None):
+        super(SettingsDialog, self).__init__(parent)
+        self.on_accept = on_accept
+        #self.setAttribute(Qt.WA_DeleteOnClose, False)
         layout = QVBoxLayout(self)
-        self.label = QLabel("Enter your token")
+        self.label_token = QLabel("Enter your token")
         self.token_input = QLineEdit(self)
-        self.save_button = QPushButton("Save", clicked=self.accept)
-        layout.addWidget(self.label)
+        self.label_vpnname = QLabel("Enter your VPN name")
+        self.vpnname_input = QLineEdit(self)
+        self.label_vpnuser = QLabel("Enter your VPN user name")
+        self.vpnuser_input = QLineEdit(self)
+        self.label_vpnpass = QLabel("Enter your VPN password")
+        self.vpnpass_input = QLineEdit(self)
+        self.label_wifiname = QLabel("Enter your Wi-Fi name")
+        self.wifiname_input = QLineEdit(self)
+        self.label_wifipass = QLabel("Enter your Wi-Fi password")
+        self.wifipass_input = QLineEdit(self)
+
+        self.save_button = QPushButton("Save")
+        layout.addWidget(self.label_token)
         layout.addWidget(self.token_input)
+        layout.addWidget(self.label_vpnname)
+        layout.addWidget(self.vpnname_input)
+        layout.addWidget(self.label_vpnuser)
+        layout.addWidget(self.vpnuser_input)
+        layout.addWidget(self.label_vpnpass)
+        layout.addWidget(self.vpnpass_input)
+        layout.addWidget(self.label_wifiname)
+        layout.addWidget(self.wifiname_input)
+        layout.addWidget(self.label_wifipass)
+        layout.addWidget(self.wifipass_input)
+
         layout.addWidget(self.save_button)
-        self.setWindowIcon(QIcon('techtoast.png'))
+        self.setWindowIcon(QIcon(resource_path('techtoast.png')))
+        self.setWindowTitle("Settings")
+        self.save_button.clicked.connect(self.accept)
+    
+    def accept(self):
+        self.on_accept(self.token_input.text())
+        super(SettingsDialog, self).accept()
 
-
+    
 class SystemTrayIcon(QSystemTrayIcon):
     def __init__(self, icon, parent=None):
         QSystemTrayIcon.__init__(self, icon, parent)
@@ -37,11 +83,17 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         self.bot_thread = None
         self.token = ''        
+        self.vpnname = ''
+        self.vpnuser = ''
+        self.vpnpass = ''
+
+        self.wifiname = ''        
+        self.wifipass = ''
 
         self.running = threading.Event()
         self.running.set()
 
-        self.settings_dialog = SettingsDialog()
+        self.settings_dialog = None #SettingsDialog(None)
         self.settings_action = QAction("Settings", triggered=self.open_settings)
         self.exit_action = QAction("Exit", triggered=self.exit)
 
@@ -49,6 +101,12 @@ class SystemTrayIcon(QSystemTrayIcon):
             with open('settings.json', 'r') as f:
                 settings = json.load(f)
                 self.token = settings['token']
+                self.vpnname = settings['vpnname']
+                self.vpnuser = settings['vpnuser']
+                self.vpnpass = settings['vpnpass']
+                self.wifiname = settings['wifiname']
+                self.wifipass = settings['wifipass']
+
         except (FileNotFoundError, json.JSONDecodeError):
             # settings.json 파일이 없거나, 파일이 유효한 JSON이 아닌 경우
             # 빈 토큰으로 설정하고 설정 창을 열기            
@@ -71,21 +129,38 @@ class SystemTrayIcon(QSystemTrayIcon):
         menu.addAction(self.settings_action)
         menu.addAction(self.exit_action)
 
+ 
+
         self.updater = None
         self.setContextMenu(menu)    
         self.show()
         self.init_telegram_bot()        
         
     def open_settings(self):
-        if self.settings_dialog.exec_():
-            self.token = self.settings_dialog.token_input.text()
-            
-        # 토큰을 settings.json 파일에 저장
-            settings = {'token': self.token}
-            with open('settings.json', 'w') as f:
-                json.dump(settings, f)
+        self.settings_dialog = SettingsDialog(self.on_settings_dialog_accept)
+        self.settings_dialog.token_input.setText(self.token)
+        self.settings_dialog.exec_()
 
-            self.init_telegram_bot()
+    def on_settings_dialog_accept(self, token, vpnname, vpnuser, vpnpass, wifiname, wifipass):
+        self.token = token
+        self.vpnname = vpnname
+        self.vpnuser = vpnuser
+        self.vpnpass = vpnpass
+        self.wifiname = wifiname
+        self.wifipass = wifipass
+        
+        # 토큰을 settings.json 파일에 저장
+        settings = {'token': self.token, 
+                    'vpnname': self.vpnname,
+                    'vpnuser': self.vpnuser,
+                    'vpnpass': self.vpnpass,
+                    'wifiname': self.wifiname,
+                    'wifipass': self.wifipass                    
+                    }
+        with open('settings.json', 'w') as f:
+            json.dump(settings, f)
+        self.init_telegram_bot()
+
 
     def exit(self):
         self.running.clear()
@@ -95,13 +170,13 @@ class SystemTrayIcon(QSystemTrayIcon):
         
         if self.bot_thread is not None and self.bot_thread.is_alive():
             self.running.clear()
-            self.bot_thread.join()  # Wait for the thread to stop
-
+            self.bot_thread.join()  # Wait for the thread to stop        
+        
         def run_bot():
             try:
-                self.updater = Updater(self.token, use_context=True)
+                self.updater = Updater(self.token, use_context=True)            
             except Exception as e:                
-                if(str(e) == 'Invalid token'):
+                if(str(e) == 'Invalid token'):                    
                     self.showMessage("Techtoast","Invalid Token")
                     return                
             
@@ -114,14 +189,19 @@ class SystemTrayIcon(QSystemTrayIcon):
             dp.add_handler(CommandHandler("startwifi", self.start_wifi))
             dp.add_handler(CommandHandler("stopwifi", self.stop_wifi))
             dp.add_handler(CommandHandler("status", self.check_status))
-
-            self.showMessage("Techtoast", "Telegram Daemon executed")
+            
             # getting user chat id for only to send the 'init' message? maybe not efficient. 
             # so blocking this function for now, maybe later.
             #chat_id = <user_chat_id>
             #self.updater.bot.send_message(chat_id=chat_id, text="Telegram Daemon executed")
             
-            self.updater.start_polling()             
+            try:
+                self.updater.start_polling()  
+            except error.Unauthorized:
+                self.showMessage("Techtoast", "Unauthorized token")
+                return
+
+            self.showMessage("Techtoast", "Telegram Daemon executed")
 
             while self.running.is_set():
                 try:
@@ -208,9 +288,9 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 def main(image):
     app = QApplication(sys.argv)
-
+    app.setQuitOnLastWindowClosed(False)
     w = SystemTrayIcon(QIcon(image))
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    main('techtoast.png')
+    main(resource_path('techtoast.png'))
