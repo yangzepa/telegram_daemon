@@ -17,7 +17,7 @@ token patterns are vary; however it will shape like <chat ID of the bot>:<Some r
 # Execution
 you can download the exe file from [here](https://github.com/yangzepa/telegram_daemon/blob/2caa6acdc8016df5154c5ecf7b90e2587ec860ab/dist/mytelegramdaemon.exe), which is in the dist folder of above. 
 
-![Settings](https://github.com/yangzepa/telegram_daemon/blob/453a22896c2017dac90316464dd418da99e8d42a/readme_images/Settings.png){: width="100px"}
+<img src="https://github.com/yangzepa/telegram_daemon/blob/453a22896c2017dac90316464dd418da99e8d42a/readme_images/Settings.png" width="200">
 
 in First execution, you can see the settings screen since we don't have the tokens entered into it.
 all the informations are saved in settings.json file (not encoded yet; we can solve it later)
