@@ -10,8 +10,11 @@ This is a utility based on the Windows Tray Bar, developed to manage VPN or Wifi
 - Software needs Admin authority for getting the VPN and Wifi information, and handling.
 - **you need to make your own telegram bot via botfather.**
 you can make your own bot via this reference https://core.telegram.org/bots/tutorial
-we need the **token** of the bot. 
-token patterns vary; however it will shape like <chat ID of the bot>:<Some random ascii-like texts>
+we need the **token** of the bot.
+
+token patterns vary; however it will shape like below.
+
+\<chat ID of the bot\>:\<Some random ascii-like texts\>
 
 ## Execution
 you can download the exe file from [here](https://github.com/yangzepa/telegram_daemon/blob/2caa6acdc8016df5154c5ecf7b90e2587ec860ab/dist/mytelegramdaemon.exe), which is in the dist folder of above. 
@@ -32,10 +35,10 @@ we're using Windows Wifi Profile, so you need to connect to it at least once.
 
 After saving the setting, a notification message will show up with the Tray-bar icon.
 
-<img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Traybar.png" width="200">
-<img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Alert1.png" width="200">
+<img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Traybar.png" width="150"><img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Alert1.png" width="300">
 
 You can also type the commands below into the bot chat room to execute functions.
+
 <img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Telegram_bot_window.png" width="400">
 
 ## commands
