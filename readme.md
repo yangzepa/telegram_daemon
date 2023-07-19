@@ -31,11 +31,11 @@ If your Wifi were connected before AND it is searchable in current location, the
 we're using windows Wifi Profile, so you need to connect to it at least once.
 
 After saving the setting, notification message will show up with Tray-bar icon.
-<img src="https://github.com/yangzepa/telegram_daemon/blob/453a22896c2017dac90316464dd418da99e8d42a/readme_images/Traybar.png" width="200">
-<img src="https://github.com/yangzepa/telegram_daemon/blob/453a22896c2017dac90316464dd418da99e8d42a/readme_images/Alert1.png" width="200">
+<img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Traybar.png" width="200">
+<img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Alert1.png" width="200">
 
 And, you can type in the below commands into bot chat room, and the function will be executed.
-<img src="https://github.com/yangzepa/telegram_daemon/blob/453a22896c2017dac90316464dd418da99e8d42a/readme_images/Telegram_bot_window.png" width="200">
+<img src="https://github.com/yangzepa/telegram_daemon/blob/f5cacced25069d7676821d3cc29aa66768794972/readme_images/Telegram_bot_window.png" width="200">
 
 ## commands
 - **/status** : show the VPN or Wifi has connected or not.
