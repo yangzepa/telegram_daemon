@@ -19,3 +19,5 @@ Todo :
 - VPN Selection
 - Wifi Selection
 - Detailed configure windows (currently it has bug)
+- password/token security (json --> environment set)
+- build command optimization (exe file size)
